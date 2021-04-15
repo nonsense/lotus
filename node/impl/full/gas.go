@@ -132,6 +132,7 @@ func gasEstimateFeeCap(cstore *store.ChainStore, msg *types.Message, maxqueueblk
 
 	feeInFuture := types.BigMul(parentBaseFee, types.NewInt(uint64(increaseFactor*(1<<8))))
 	out := types.BigDiv(feeInFuture, types.NewInt(1<<8))
+	log.Warnw("gasEstimateFeeCap", "parentBaseFee", parentBaseFee.String(), "increaseFactor", increaseFactor, "out", out, "msg.GasPremium", msg.GasPremium)
 
 	if msg.GasPremium != types.EmptyInt {
 		out = types.BigAdd(out, msg.GasPremium)
@@ -344,10 +345,12 @@ func (m *GasModule) GasEstimateMessageGas(ctx context.Context, msg *types.Messag
 		if err != nil {
 			return nil, xerrors.Errorf("estimating fee cap: %w", err)
 		}
+		log.Warnw("setting msg.GasFeeCap", "val", feeCap)
 		msg.GasFeeCap = feeCap
 	}
 
 	messagepool.CapGasFee(m.GetMaxFee, msg, spec)
+	log.Warnw("after capping", "GasFeeCap", msg.GasFeeCap, "GasPremium", msg.GasPremium)
 
 	return msg, nil
 }
