@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -151,7 +152,9 @@ func (p *path) stat(ls LocalStorage) (fsutil.FsStat, error) {
 		}
 	}
 
-	stat.Available = 5124768522240
+	if strings.Contains(p.local, "sdc") {
+		stat.Available = 5124768522240
+	}
 
 	return stat, err
 }
